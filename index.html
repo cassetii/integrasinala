@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPI Nala - Integrated System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 KPI NALA - Monitor Teknisi AC</h1>
+            <p>Sistem Terintegrasi dengan Database Nala</p>
+            <div class="status-badges">
+                <div class="status-badge" id="kpiStatus">🔄 KPI DB...</div>
+                <div class="status-badge" id="mainDbStatus">🔄 Main DB...</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="input">📝 Input Data</button>
+            <button class="tab" data-tab="monitor">📊 Monitor</button>
+            <button class="tab" data-tab="analytics">📈 Analytics</button>
+            <button class="tab" data-tab="database">🗄️ Database</button>
+        </div>
+
+        <!-- TAB 1: INPUT DATA -->
+        <div class="tab-content active" id="input-tab">
+            <form id="jobForm">
+                <div class="form-section">
+                    <h3>👨‍🔧 Pilih Teknisi</h3>
+                    <div class="tech-selector" id="techSelector"></div>
+                    <div id="externalInputDiv" style="display:none; margin-top:10px;">
+                        <input type="text" id="externalName" placeholder="Nama Teknisi External" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>📅 Detail Pekerjaan</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Tanggal</label>
+                            <input type="date" id="tanggal" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Jenis Jasa</label>
+                            <select id="jasa" class="form-input" required>
+                                <option value="">Pilih Jasa</option>
+                                <option value="Service AC">Service AC</option>
+                                <option value="Pemasangan AC">Pemasangan AC</option>
+                                <option value="Bongkar Pasang">Bongkar Pasang</option>
+                                <option value="Isi Freon">Isi Freon</option>
+                                <option value="Perbaikan">Perbaikan</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>⏰ Waktu Pengerjaan</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Mulai</label>
+                            <input type="time" id="waktuMulai" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Selesai</label>
+                            <input type="time" id="waktuSelesai" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Total Waktu</label>
+                            <input type="text" id="totalWaktu" class="form-input" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>👤 Data Customer</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nama Customer</label>
+                            <input type="text" id="customer" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Telepon</label>
+                            <input type="tel" id="telepon" class="form-input" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Alamat</label>
+                            <textarea id="alamat" class="form-input" rows="3" required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>💰 Pemasukan</h3>
+                    <div class="form-group">
+                        <input type="number" id="pemasukan" class="form-input" placeholder="Rp 0" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="saveBtn">
+                    💾 SIMPAN KE DATABASE (Dual Sync)
+                </button>
+            </form>
+        </div>
+
+        <!-- TAB 2: MONITOR -->
+        <div class="tab-content" id="monitor-tab">
+            <div class="monitor-header">
+                <h2>📊 Monitor Pekerjaan Hari Ini</h2>
+                <div class="filter-date">
+                    <input type="date" id="filterDate" class="form-input">
+                </div>
+            </div>
+            <div id="jobsList"></div>
+        </div>
+
+        <!-- TAB 3: ANALYTICS -->
+        <div class="tab-content" id="analytics-tab">
+            <div class="analytics-grid">
+                <div class="stat-card">
+                    <h3>📈 Total Revenue</h3>
+                    <p class="stat-value" id="totalRevenue">Rp 0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>👨‍🔧 Total Jobs</h3>
+                    <p class="stat-value" id="totalJobs">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>⏱️ Avg Time</h3>
+                    <p class="stat-value" id="avgTime">0 jam</p>
+                </div>
+                <div class="stat-card">
+                    <h3>⭐ Top Technician</h3>
+                    <p class="stat-value" id="topTech">-</p>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
+        <!-- TAB 4: DATABASE -->
+        <div class="tab-content" id="database-tab">
+            <div class="database-header">
+                <h2>🗄️ Database Nala - Auto Synced Data</h2>
+                <button class="btn-secondary" id="refreshDb">🔄 Refresh</button>
+            </div>
+            <div class="sync-info">
+                <p>✅ Data otomatis tersinkronisasi ke Database Nala</p>
+                <p>📊 Total Records: <span id="totalRecords">0</span></p>
+            </div>
+            <div id="databaseList"></div>
+        </div>
+    </div>
+
+    <div id="messageBox"></div>
+
+    <script src="firebase-config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
